@@ -4,10 +4,23 @@ import { compose, createStore, applyMiddleware } from 'redux';
 import ReduxThunk from 'redux-thunk';
 import ReactDOM from 'react-dom';
 
+//App
+import reducers from './reducers';
+import BasicForm from './components/BasicForm';
+
+const customMiddleWare = store => next => action => {
+  console.log("Middleware triggered:", action);
+  next(action);
+}
+
+const store = createStore(reducers,{}, applyMiddleware(ReduxThunk));
+
 class Demo extends Component {
   render() {
     return (
-      <h1>Validstate Demo Application</h1>
+      <Provider store={store}>
+        <BasicForm />
+      </Provider>
     );
   }
 }
