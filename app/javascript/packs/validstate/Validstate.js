@@ -1,4 +1,4 @@
-import * from './ValidstateConst';
+import * as ValidstateConst from './ValidstateConst';
 
 export default class Validstate {
 
@@ -28,7 +28,7 @@ export default class Validstate {
     this.properties = {}; 
 
     this.store.dispatch({
-      type: VALIDSTATE_INIT,
+      type: ValidstateConst.VALIDSTATE_INIT,
       payload: this.properties
     })
   }
@@ -101,6 +101,7 @@ export default class Validstate {
       || typeof value === 'undefined'
       || value == null
       || (typeof value === 'object' && isEmptyObject(value))
+      || Object.is(value, NaN)
     );
   }
 
@@ -142,6 +143,134 @@ export default class Validstate {
   */
   maxLength(value, length) {
     return this.getLength(value) <= length ? true : false;
+  }
+
+  /*
+  * @function rangeLength
+  * @description Check value is between a given range of lengths. 
+  * @parameter value, range(hyphenated string)
+  * @return Boolean
+  */
+  rangeLength(value, range) {
+    if(this.thetypeof(value).is('array') || this.thetypeof(value).is('string')) {
+      const rangeValue = range.split("-")
+      return this.minLength(value, rangeValue[0]) && this.maxLength(value, rangeValue[1]);
+    } else { return false };
+  }
+
+  /*
+  * @function min
+  * @description  Determine if a value is >= min parameter
+  * @parameter value, min
+  * @return Boolean
+  */
+  min(value, min) {
+    return value >= min ? true : false;
+  }
+
+  /*
+  * @function max
+  * @description  @description  Determine if a value is <= min parameter
+  * @parameter value, max
+  * @return Boolean
+  */
+  max(value, max) {
+    return value <= max ? true : false;
+  }
+
+  /*
+  * @function range
+  * @description Check value is between a given range. 
+  * @parameter value, range(hyphenated string)
+  * @return Boolean
+  */
+  range(value, range) {
+    const rangeValue = range.split("-")
+    return this.min(value, rangeValue[0]) && this.max(value, rangeValue[1]);
+  }
+
+  /*
+  * @function step
+  * @description Check value in given step. 
+  * @parameter value, step
+  * @return Boolean
+  */
+  step(value, step) {
+    return (value % step !== 0) ? false : true
+  }
+
+  /*
+  * @function email
+  * @description Check value is valid email. 
+  * @parameter email
+  * @return Boolean
+  */
+  email(email) {
+    return /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(email);
+  }
+
+  /*
+  * @function number
+  * @description  Makes the element require a number. 
+  * @parameter value
+  * @return Boolean
+  */
+  number(value) {
+    return this.thetypeof(value).is('number') ? true : false;
+  }
+
+  /*
+  * @function numeric
+  * @description Makes the element require a numberical value. 
+  * @parameter value
+  * @return Boolean
+  */
+  numeric(value) {
+    if(this.thetypeof(value).is('number') || this.thetypeof(value).is('string')) {
+      return !isNaN(parseFloat(value)) && isFinite(value);
+    } else { return false };
+  }
+
+  /*
+  * @function integer
+  * @description Checks for the value to be positive or negative non decimal. 
+  * @parameter value
+  * @return Boolean
+  */
+  integer(value) {
+    if(this.thetypeof(value).is('number') || this.thetypeof(value).is('string')) {
+      return Number.isInteger(value)
+    }
+  }
+
+  /*
+  * @function digits
+  * @description Checks for the value to be positive non decimal numeral. 
+  * @parameter value
+  * @return Boolean
+  */
+  digits(value) {
+    return /^\d+$/.test( value );
+  }
+
+  /*
+  * @function equalTo
+  * @description Soft compare of one value to another ==
+  * @parameter value, comparison
+  * @return Boolean
+  */
+  equalTo(value, comparison) {
+    return value == comparison;
+  }
+
+  /*
+  * @function isEqualTo
+  * @description Strong comparison of one value to another ===
+  * @parameter value, comparison
+  * @return Boolean
+  */
+  isEqualTo(value, comparison) {
+    return value === comparison;
   }
 
 }
