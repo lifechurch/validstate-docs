@@ -8,12 +8,12 @@ import ReactDOM from 'react-dom';
 import reducers from './reducers';
 import BasicForm from './components/BasicForm';
 
-const customMiddleWare = store => next => action => {
-  console.log("Middleware triggered:", action);
+const customMiddleWare = config => store => next => action => {
+  console.log("Middleware triggered:", action, config.value);
   next(action);
 }
 
-const store = createStore(reducers,{}, applyMiddleware(ReduxThunk));
+const store = createStore(reducers,{}, applyMiddleware(ReduxThunk, customMiddleWare(testConfig)));
 
 class Demo extends Component {
   render() {
