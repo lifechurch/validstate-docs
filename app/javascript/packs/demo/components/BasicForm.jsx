@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 //App
 import { StylishInput } from './common';
 import { emailChanged, passwordChanged, nameChanged, submitAccount } from '../actions';
+import TestClass from '../testClass';
 
 class BasicForm extends Component {
 

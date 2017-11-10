@@ -1,4 +1,37 @@
-class Validstate {
+import * from './ValidstateConst';
+
+export default class Validstate {
+
+  /*
+  * @function constructor
+  * @description Initilize component variables
+  * @param 
+  * @returns Validstate instance
+  */
+  constructor(){
+    this.store = null;
+    this.rules = {};
+    this.properties = {};
+  }
+
+  /*
+  * @function init
+  * @description Initilize object with application rules
+  * @param rules, store
+  * @returns Validstate instance
+  */
+  init(rules, store){
+    this.rules = rules;
+    this.store = store;
+
+    //Parse rules for properties and normalize
+    this.properties = {}; 
+
+    this.store.dispatch({
+      type: VALIDSTATE_INIT,
+      payload: this.properties
+    })
+  }
 
   /*
   * @function thetypeof
@@ -241,5 +274,3 @@ class Validstate {
   }
 
 }
-
-module.exports = Validstate;
