@@ -12,7 +12,6 @@ const INITIAL_STATE = {
 export default (state = {}, action) => {
   switch (action.type) {
     case VALIDSTATE_INIT:
-      console.log(action);
       return { ...state, ...action.payload }
     case VALIDSTATE_SUCCESS:
       return { ...state, valid: true };

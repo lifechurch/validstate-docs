@@ -1,33 +1,84 @@
-const VALIDATION_RULES = {
-  amountSubmitable: {
-    amount: { number: true, min: 0.5 },
-    //OPTIONAL
+const VALIDATIONS = {
+  account: {
+    name: { required: true },
+    email: { email: true },
+    password: { minLength: 8 },
     _messages: {
-      amount: { 
-        number: "Amount must be a number.",
-        min: "Amount must be greater than $0.50."
+      name: { 
+        required: "Please let us know your name so we can address you properly.",
       }
     }
   },
-  postDonation: { 
-    amount: { number: true, min: 0.5 },
-    paymentMethodList: { minLength: 1 }
+  contactRequest: {
+    name: { required: true },
+    message: { rangelength: "15-500" },
+    mobile: { phoneUS: true, requireGroup: "phoneNumber" },
+    home: { phoneUS: true, requireGroup: "phoneNumber" },
+    age: { digits: true, range: "18-35" },
+    terms: { equalTo: true }
   },
-  userCanDoThing: {
-    amount: { number: true, min: 5000 },
-    paymentMethod: { equalTo: "VISA" },
-    username: { required: true }
+  shoppingCart: {
+    itemCount: { integer: true, step: 2 },
+    couponCode: { regex: /^(?=\S+[a-zA-Z])(?=\S+\d)\S{8,8}$/ },
+    creditCardNumber: { creditCard: true },
+    paymentMethod: { elementOf: ["VISA", "MasterCard", "AMEX", "Discover"] },
+    items: { forEach: {
+      id: { numeric: true },
+      quanity: { min: 1, integer: true },
+      rating: { number: true }
+    }},
+    hasAccount: { isEqualTo: true }
+  },
+  adminAccess: {
+    permissions: {
+      includes: "ACCOUNT_CONTROL"
+    }
   }
 }
 
-const INITIAL_STATE = { 
-  amount: {
-    valid: false,
-    reason: "number",
-    message: ""
+
+const STATE = { 
+  account: {
+    name: { 
+      valid: true,
+      reason: null,
+      message: null
+    },
+    email: { 
+      valid: true,
+      reason: null,
+      message: null
+    },
+    password: { 
+      valid: true,
+      reason: null,
+      message: null
+    }
   },
-  paymentMethod: {
-    valid: true,
-    reason: null,
+  shoppingCart: {
+    valid: false,
+    itemCount: {
+      valid: true,
+      reason: null,
+      message: null
+    },
+    items: {
+      valid: false,
+      elements: [
+        { 
+          valid: false,
+          quanity: {
+            valid: false,
+            reason: "integer",
+            message: "Quanity must be an integer"
+          },
+          id: {
+            valid: true,
+            reason: null,
+            message: null
+          }
+        }
+      ]
+    }  
   }
-};
+}
