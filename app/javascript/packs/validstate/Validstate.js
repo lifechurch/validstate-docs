@@ -1,4 +1,4 @@
-import * from './ValidstateConst';
+import * as ValidstateConst from './ValidstateConst';
 
 export default class Validstate {
 
@@ -28,7 +28,7 @@ export default class Validstate {
     this.properties = {}; 
 
     this.store.dispatch({
-      type: VALIDSTATE_INIT,
+      type: ValidstateConst.VALIDSTATE_INIT,
       payload: this.properties
     })
   }
