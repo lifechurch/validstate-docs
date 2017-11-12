@@ -10,8 +10,10 @@ export default class Validstate {
   */
   constructor(){
     this.store = null;
-    this.rules = {};
+    this.validationConfig = {};
+    this.validations = [];
     this.properties = {};
+    this.requireGroups = [];
   }
 
   /*
@@ -24,14 +26,55 @@ export default class Validstate {
     this.rules = rules;
     this.store = store;
 
-    //Parse rules for properties and normalize
-    this.properties = {}; 
+    //Parse validations for properties
+    this.extract(); 
 
     this.store.dispatch({
       type: VALIDSTATE_INIT,
       payload: this.properties
     })
   }
+
+  /*
+  * @function extract
+  * @description Extract Properties, validations and requireGroups from rules
+  * @param
+  * @returns Properties object
+  */
+  extract(){
+    for (const [key, value] of Object.entries(this.validationConfig)) {
+
+      let validation = value;
+
+      if(this.validations.includes(key)){
+        throw new Error(`Duplicate validation key. ${key} was already used.`);
+      }
+      else{
+        this.validations.push(key);  
+      }
+
+      this.properties[validation] = {
+        valid: null
+      };
+
+      for (const [key, value] of Object.entries(validation)) {
+
+        if(key === "_messages"){
+          //Messages Property
+        }
+        else{
+          let property = key; 
+          this.properties[validation][property] = {
+            valid: null,
+            reason: null,
+            message: null
+          }
+        }
+
+      }
+    }
+  }
+
 
   /*
   * @function thetypeof

@@ -39,6 +39,7 @@ const VALIDATIONS = {
 
 const STATE = { 
   account: {
+    valid: true,
     name: { 
       valid: true,
       reason: null,
