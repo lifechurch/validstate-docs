@@ -6,76 +6,31 @@ nav.navigation
       a.no-underline href="/" Validstate
   section.nav-sidebar
     ul
-      = nav_link 'Installation', '#installation'
-      = nav_link 'Basic Usage', '#usage'
-      = nav_link 'Validations', '#validations'
-      = nav_link 'Options', '#options'
+      li: a.nav-dropdown href="#installation" Installation
+      li: a.nav-dropdown href="#usage" Basic Usage
+      li
+        a.nav-dropdown Validations
+        ul
+          = nav_link('Required', '#required')
+          = nav_link('Minlength', '#minlength')
+          = nav_link('Maxlength', '#maxlength')
+          = nav_link('Rangelength', '#rangelength')
+          = nav_link('Min', '#min')
+          = nav_link('Max', '#max')
+          = nav_link('Range', '#range')
+          = nav_link('Step', '#step')
+          = nav_link('Email', '#email')
+          = nav_link('Number', '#number')
+          = nav_link('Numeric', '#numeric')
+          = nav_link('Integer', '#integer')
+          = nav_link('Digits', '#digits')
+          = nav_link('Equalto', '#equalto')
+          = nav_link('Isequalto', '#isequalto')
+          = nav_link('Includes', '#includes')
+          = nav_link('Elementof', '#elementof')
+          = nav_link('Creditcard', '#creditcard')
+          = nav_link('Regex', '#regex')
+          = nav_link('Phoneus', '#phoneus')
+          = nav_link('Requiregroup', '#requiregroup')
 
-    / ul
-    /   li class=("#{controller_name == 'utilities' ? 'active' : ''}") 
-    /     a.nav-dropdown
-    /       = image_tag 'micro-utility@2x.png', size: '15x15'
-    /       | Utilites
-    /     ul
-    /       = nav_link('Mixins & Media Queries', mixins_path)
-    /       = nav_link('Alignment', alignment_path)
-    /       = nav_link('Collapse', collapse_path)
-    /       = nav_link('Colors', colors_path)
-    /       = nav_link('Images', images_path)
-    /       = nav_link('Scrollspy', scrollspy_path)
-    /       = nav_link('Shadows', shadows_path)
-    /       = nav_link('Spacing', spacing_path)
-    /       = nav_link('Text', text_path)
-    /       = nav_link('Videos', videos_path)
-    /       = nav_link('Visibility', visibility_path)
-    /   li class=("#{controller_name == 'atoms' ? 'active' : ''}") 
-    /     a.nav-dropdown
-    /       = image_tag 'micro-atom@2x.png', size: '15x15'
-    /       | Atoms
-    /     ul
-    /       = nav_link('Baseline', baseline_path)
-    /       = nav_link('Figures', figures_path)
-    /       = nav_link('Icons', icons_path)
-    /       = nav_link('Progress', progress_path)
-    /       = nav_link('Typography', typography_path)
-    /       /! <haml_loud> nav_link(&#39;Variables&#39;, variables_path) </haml_loud
-    /   li class=("#{controller_name == 'elements' ? 'active' : ''}") 
-    /     a.nav-dropdown
-    /       = image_tag 'micro-element@2x.png', size: '15x15'
-    /       | Elements
-    /     ul
-    /       = nav_link('Avatars', avatars_path)
-    /       = nav_link('Alerts', alerts_path)
-    /       = nav_link('Breadcrumbs', breadcrumbs_path)
-    /       = nav_link('Buttons', buttons_path)
-    /       = nav_link('Dropdowns', dropdowns_path)
-    /       = nav_link('Forms', forms_path)
-    /       = nav_link('Loader', loader_path)
-    /       = nav_link('Popovers', popovers_path)
-    /       = nav_link('Tags', tags_path)
-    /       = nav_link('Tooltips', tooltips_path)
-    /   li class=("#{controller_name == 'alloys' ? 'active' : ''}") 
-    /     a.nav-dropdown
-    /       = image_tag 'micro-alloy@2x.png', size: '15x15'
-    /       | Alloys
-    /     ul
-    /       = nav_link('Button Group', button_group_path)
-    /       = nav_link('Button Dropdown', button_dropdown_path)
-    /       = nav_link('Input Group', input_group_path)
-    /       = nav_link('Cards', cards_path)
-    /       /! <haml_loud> nav_link(&#39;List Group&#39;, list_group_path) </haml_loud
-    /       = nav_link('Modal', modal_path)
-    /       / <haml_loud> nav_link(&#39;Navs&#39;, navs_path) </haml_loud
-    /       / <haml_loud> nav_link(&#39;Navbar&#39;, navbar_path) </haml_loud
-    /       = nav_link('Off Canvas', off_canvas_path)
-    /       = nav_link('Pagination', pagination_path)
-    /       = nav_link('Stylish forms', stylish_forms_path)
-    /       = nav_link('Tables', tables_path)
-    /   li class=("#{controller_name == 'layout' ? 'active' : ''}") 
-    /     a.nav-dropdown
-    /       = image_tag 'micro-layout@2x.png', size: '15x15'
-    /       | Layouts
-    /     ul
-    /       = nav_link('Overview', overview_path)
-    /       = nav_link('Grid', grid_path)
-    /       = nav_link('Block Grid', block_grid_path)
+      li: a.nav-dropdown href="#options" Options
