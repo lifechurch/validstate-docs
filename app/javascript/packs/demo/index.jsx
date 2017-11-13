@@ -10,11 +10,6 @@ import validationConfig from '../validstate/validations_example';
 import reducers from './reducers';
 import BasicForm from './components/BasicForm';
 
-const customMiddleWare = config => store => next => action => {
-  console.log("Middleware triggered:", action, config.value);
-  next(action);
-}
-
 const store = createStore(reducers,{}, applyMiddleware(ReduxThunk));
 
 Validstate.init(validationConfig, store);

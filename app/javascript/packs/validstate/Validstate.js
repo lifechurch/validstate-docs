@@ -1,4 +1,5 @@
 import * as ValidstateConst from './ValidstateConst';
+import ValidstateMessages from './ValidstateMessages';
 
 export default class Validstate {
 
@@ -14,6 +15,7 @@ export default class Validstate {
     this.validations = [];
     this.properties = {};
     this.messages = {};
+    this.messageTemplate = new ValidstateMessages();
     this.requireGroups = [];
   }
 
@@ -102,6 +104,10 @@ export default class Validstate {
     this.properties[validation].valid = true; 
 
     for (const [propertyKey, property] of Object.entries(this.validationConfig[validation])) {
+
+      if(propertyKey == "_messages"){
+        continue;
+      }
       
       let propertyValidstate = {
         valid: true,
@@ -116,7 +122,7 @@ export default class Validstate {
           this.properties[validation].valid = false;
           propertyValidstate.valid = false;
           propertyValidstate.reason = ruleKey;
-          propertyValidstate.message = this.buildMessage(ruleKey, propertyKey, value);
+          propertyValidstate.message = this.getMessage(validation, propertyKey, ruleKey, rule);
           break;
         }
       }
@@ -139,13 +145,19 @@ export default class Validstate {
   }
 
   /*
-  * @function buildMessage
-  * @description Build a message from rule and value or return user specified message
-  * @param ruleKey, value
+  * @function getMessage
+  * @description Retrive a user specified message or build a default message.
+  * @param validation, propertyKey, ruleKey, value
   * @returns string
   */
-  buildMessage(ruleKey, propertyKey, value){
-    return `${propertyKey} invalid because of ${ruleKey}`;
+  getMessage(validation, propertyKey, ruleKey, rule){
+    if(this.messages[validation] !== undefined && 
+       this.messages[validation][propertyKey] !== undefined &&
+       this.messages[validation][propertyKey][ruleKey] !== undefined){
+      return this.messages[validation][propertyKey][ruleKey];
+    } else {
+      return this.messageTemplate[ruleKey](propertyKey, rule);
+    }
   }
 
   /*
@@ -158,7 +170,9 @@ export default class Validstate {
     let state = this.store.getState();
     let mergedState = {};
     for (const [key, reducer] of Object.entries(state)) {
-      mergedState = { ...mergedState, ...reducer };
+      if(key != "validstate"){
+        mergedState = { ...mergedState, ...reducer };  
+      }
     }
     return mergedState;
   }

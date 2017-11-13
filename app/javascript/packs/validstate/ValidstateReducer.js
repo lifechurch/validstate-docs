@@ -14,9 +14,9 @@ export default (state = {}, action) => {
     case VALIDSTATE_INIT:
       return { ...state, ...action.payload }
     case VALIDSTATE_SUCCESS:
-      return { ...state, valid: true };
+      return { ...state, valid: true, ...action.payload };
     case VALIDSTATE_FAIL:
-      return { ...state, valid: false };
+      return { ...state, valid: false, ...action.payload };
     case VALIDSTATE_CLEAR: 
       return { ...INITIAL_STATE }; 
     default:

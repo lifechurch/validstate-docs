@@ -5,19 +5,18 @@ import { connect } from 'react-redux';
 //App
 import { StylishInput } from './common';
 import { emailChanged, passwordChanged, nameChanged, submitAccount } from '../actions';
-import TestClass from '../testClass';
+import Validstate from '../../validstate';
 
 class BasicForm extends Component {
 
   submit(event){
     event.preventDefault();
-    console.log("Submitted");
-    // if(this.props.user.isEmpty()){
-    //   this.props.findUserByEmail(this.props.email, this.props.history);  
-    // }
-    // else{
-    //   this.props.loginUser(this.props.email, this.props.password, this.props.history);
-    // }
+    if(Validstate.validate('account')){
+      console.log('Valid!!');
+      this.props.submitAccount();
+    } else {
+      console.log('Invalid!!');
+    }
   }
 
   onEmailChange(event) {
@@ -61,8 +60,9 @@ class BasicForm extends Component {
   }
 }
 
-const mapStateToProps = ({ core }) => {
+const mapStateToProps = ({ core, validstate }) => {
   let { name, email, password } = core;
+  console.log(validstate);
   return { name, email, password };
 };
 
