@@ -30,5 +30,5 @@ export const submitAccount = () => {
   return {
     type: ACCOUNT_SUBMITTED,
     payload: {}
-  }
+  }  
 }
