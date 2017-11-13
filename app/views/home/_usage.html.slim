@@ -1,5 +1,59 @@
 section.row id="usage"
   .col-sm-12
     h1 Basic Usage:
-    p Installation details here
+    p 
+      | The first thing you will need to do is create a 
+      code.highlighter-rouge> validations config 
+      | file that will hold all of your applications validation rules. For example. If you have an account creation form that you would like to validate before a user can create an account, you could set up your validations config with something like this.
+    markdown:
+      ```javascript
+      const VALIDATIONS = {
+        account: {
+          name: { required: true },
+          email: { email: true },
+          password: { minLength: 8 },
+          _messages: {
+            name: { 
+              required: "Please let us know your name so we can address you properly.",
+            }
+          }
+        }
+      export default validations;
+      ```
+
+    p 
+      | The validations config is simply a constant that is storing a json object of each rule. Keep in mind that Validstate is not simply a form validator, but a state validation plugin. You can also add rules to validate whether the state is in a place to allow the app to continue or decline a user interaction. If your app is aware of user roles you could also add this rule to your 
+      code.highlighter-rouge> VALIDATIONS
+      | constant and check where a user is permitted in a certain area of your app.
+    markdown:
+      ```javascript
+      ...
+      },
+      adminAccess: {
+        permissions: {
+          includes: "ACCOUNT_CONTROL"
+        }
+      }
+      ```
+
+    p 
+      | Once you have your validation rules created you need to wire up Validstate inside of your app. In your 
+      code.highlighter-rouge> index.js
+      | file include the Validstate package and the validstate rules you created.
+    markdown:
+      ```javascript
+      import Validstate from 'validstate';
+
+      import validationConfig from '../validstate/validations_config';
+      ```
+    p Now initialize the Validstate and pass in your redux store using:
+    markdown:
+      ```javascript
+      ...
+
+      Validstate.init(validationConfig, store);
+      ```
+
+
+
 
