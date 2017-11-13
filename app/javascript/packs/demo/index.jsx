@@ -13,7 +13,7 @@ const customMiddleWare = config => store => next => action => {
   next(action);
 }
 
-const store = createStore(reducers,{}, applyMiddleware(ReduxThunk, customMiddleWare(testConfig)));
+const store = createStore(reducers,{}, applyMiddleware(ReduxThunk));
 
 class Demo extends Component {
   render() {

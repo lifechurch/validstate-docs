@@ -21,6 +21,8 @@ gem 'webpacker', '~> 3.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
+# Include Slim
+gem 'slim', '~> 3.0', '>= 3.0.6'
 # Inlude jQuery
 gem 'jquery-rails', '~> 4.3.1'
 # Use CoffeeScript for .coffee assets and views
@@ -39,6 +41,15 @@ gem 'jbuilder', '~> 2.5'
 
 # Metal
 gem 'on-metal', :git => 'https://github.com/lifechurch/on-metal.git'
+
+gem 'slim-rails', github: 'slim-template/slim-rails'
+gem 'redcarpet', "~> 3.x"
+gem 'rouge'
+
+# ON Metal Dependancys
+source "https://rails-assets.org" do
+  gem "rails-assets-tether"
+end
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
