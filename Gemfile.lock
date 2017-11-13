@@ -225,7 +225,6 @@ DEPENDENCIES
   rouge
   sass-rails (~> 5.0)
   selenium-webdriver
-  slim (~> 3.0, >= 3.0.6)
   slim-rails!
   spring
   spring-watcher-listen (~> 2.0.0)
