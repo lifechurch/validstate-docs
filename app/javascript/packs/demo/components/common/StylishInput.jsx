@@ -20,7 +20,8 @@ class StylishInput extends Component {
         'field': true,
         'focused': this.state.focused,
         'has-value': !!this.props.value,
-        [this.props.fieldClassName]: true
+        'field_with_errors': this.props.valid == false,
+        [this.props.fieldClassName]: this.props.fieldClassName ? true : false
       })
     }
   }

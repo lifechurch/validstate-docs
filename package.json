@@ -8,6 +8,7 @@
     "babel-preset-stage-2": "^6.24.1",
     "classnames": "^2.2.5",
     "coffeescript": "1.12.7",
+    "lodash.clonedeep": "^4.5.0",
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",

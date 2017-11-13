@@ -34,10 +34,9 @@ class BasicForm extends Component {
     this.props.nameChanged(text);
   }
 
-  // {
-  //             (this.props.invalid_password) &&
-  //             <div className="form-errors">That's an invalid password</div>
-  //           }
+  clearValidations(){
+    Validstate.clear();
+  }
 
   render() {
     return (
@@ -47,10 +46,10 @@ class BasicForm extends Component {
             <h2 className="m-b-1">Basic Form Submission</h2>
             <div className="row">
               <div className="col-lg-12">
-                <StylishInput label="Name" name="Name" value={this.props.name} onChange={this.onNameChange.bind(this)} type="text" />
-                <StylishInput label="Email" name="Email" value={this.props.email} onChange={this.onEmailChange.bind(this)} type="text" />
-                <StylishInput label="Password" name="Password" value={this.props.password} onChange={this.onPasswordChange.bind(this)} type="password" autoFocus="true" />
-                <input className="button button-primary" name="commit" type="submit" value="Submit" />
+                <StylishInput label="Name" name="Name" valid={this.props.validstate.account.name.valid} value={this.props.name} onChange={this.onNameChange.bind(this)} type="text" />
+                <StylishInput label="Email" name="Email" valid={this.props.validstate.account.email.valid} value={this.props.email} onChange={this.onEmailChange.bind(this)} type="text" />
+                <StylishInput label="Password" name="Password" valid={this.props.validstate.account.password.valid} value={this.props.password} onChange={this.onPasswordChange.bind(this)} type="password" autoFocus="true" />
+                <input className="button button-primary" name="commit" type="submit" value="Submit" /> <button type="button" className="button button-secondary" onClick={this.clearValidations.bind(this)}>Clear</button>
               </div>
             </div>
           </form>
@@ -63,7 +62,7 @@ class BasicForm extends Component {
 const mapStateToProps = ({ core, validstate }) => {
   let { name, email, password } = core;
   console.log(validstate);
-  return { name, email, password };
+  return { name, email, password, validstate};
 };
 
 export default connect(mapStateToProps, { emailChanged, passwordChanged, nameChanged, submitAccount })(BasicForm);
