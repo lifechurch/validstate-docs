@@ -36,6 +36,8 @@ const VALIDATIONS = {
   }
 }
 
+export default VALIDATIONS;
+
 
 const STATE = { 
   account: {

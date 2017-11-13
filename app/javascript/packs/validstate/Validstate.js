@@ -13,6 +13,7 @@ export default class Validstate {
     this.validationConfig = {};
     this.validations = [];
     this.properties = {};
+    this.messages = {};
     this.requireGroups = [];
   }
 
@@ -22,8 +23,8 @@ export default class Validstate {
   * @param rules, store
   * @returns Validstate instance
   */
-  init(rules, store){
-    this.rules = rules;
+  init(validationConfig, store){
+    this.validationConfig = validationConfig;
     this.store = store;
 
     //Parse validations for properties
@@ -42,37 +43,124 @@ export default class Validstate {
   * @returns Properties object
   */
   extract(){
-    for (const [key, value] of Object.entries(this.validationConfig)) {
+    for (const [validationKey, validation] of Object.entries(this.validationConfig)) {
 
-      let validation = value;
-
-      if(this.validations.includes(key)){
-        throw new Error(`Duplicate validation key. ${key} was already used.`);
+      if(this.validations.includes(validationKey)){
+        throw new Error(`Duplicate validation key. ${validationKey} was already used.`);
       }
       else{
-        this.validations.push(key);  
+        this.validations.push(validationKey);  
       }
 
-      this.properties[validation] = {
+      this.properties[validationKey] = {
         valid: null
       };
 
-      for (const [key, value] of Object.entries(validation)) {
+      for (const [propertyKey, property] of Object.entries(validation)) {
 
-        if(key === "_messages"){
+        if(propertyKey === "_messages"){
           //Messages Property
+          if(!this.thetypeof(this.messages[validationKey]).is('object')){
+            this.messages[validationKey] = {};
+          }
+          this.messages[validationKey] = property;
         }
         else{
-          let property = key; 
-          this.properties[validation][property] = {
-            valid: null,
-            reason: null,
-            message: null
+
+          if(Object.keys(property)[0] == "forEach"){
+            this.properties[validationKey][propertyKey] = {
+              valid: null,
+              elements: []
+            }
+          }
+          else{
+            this.properties[validationKey][propertyKey] = {
+              valid: null,
+              reason: null,
+              message: null
+            }
           }
         }
-
       }
     }
+  }
+
+  /*
+  * @function validate
+  * @description Run speciified validations
+  * @param validation 
+  * @returns boolean
+  */
+  validate(validation){
+    if(this.validationConfig[validation] == undefined){
+      throw new Error(`${validation} validation does not exist.`);
+      return false;
+    }
+
+    let mergedState = this.mergeState();
+
+    this.properties[validation].valid = true; 
+
+    for (const [propertyKey, property] of Object.entries(this.validationConfig[validation])) {
+      
+      let propertyValidstate = {
+        valid: true,
+        reason: null,
+        message: null
+      }
+
+      for (const [ruleKey, rule] of Object.entries(property)){
+        let value = mergedState[propertyKey];
+        let valid = this[ruleKey](value, rule);
+        if(!valid){
+          this.properties[validation].valid = false;
+          propertyValidstate.valid = false;
+          propertyValidstate.reason = ruleKey;
+          propertyValidstate.message = this.buildMessage(ruleKey, propertyKey, value);
+          break;
+        }
+      }
+      this.properties[validation][propertyKey] = { ...propertyValidstate };
+    }
+
+    if(this.properties[validation].valid){
+      this.store.dispatch({
+        type: ValidstateConst.VALIDSTATE_SUCCESS,
+        payload: this.properties
+      });
+      return true;
+    } else {
+      this.store.dispatch({
+        type: ValidstateConst.VALIDSTATE_FAIL,
+        payload: this.properties
+      });
+      return false;
+    }
+  }
+
+  /*
+  * @function buildMessage
+  * @description Build a message from rule and value or return user specified message
+  * @param ruleKey, value
+  * @returns string
+  */
+  buildMessage(ruleKey, propertyKey, value){
+    return `${propertyKey} invalid because of ${ruleKey}`;
+  }
+
+  /*
+  * @function mergeState
+  * @description Merge state into single object
+  * @param  
+  * @returns object
+  */
+  mergeState(){
+    let state = this.store.getState();
+    let mergedState = {};
+    for (const [key, reducer] of Object.entries(state)) {
+      mergedState = { ...mergedState, ...reducer };
+    }
+    return mergedState;
   }
 
 
@@ -105,6 +193,7 @@ export default class Validstate {
     }
     return obj;
   };
+
 
   /*
   * @function getLength

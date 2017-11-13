@@ -3,8 +3,10 @@ import { Provider } from 'react-redux';
 import { compose, createStore, applyMiddleware } from 'redux';
 import ReduxThunk from 'redux-thunk';
 import ReactDOM from 'react-dom';
+import Validstate from '../validstate';
 
 //App
+import validationConfig from '../validstate/validations_example';
 import reducers from './reducers';
 import BasicForm from './components/BasicForm';
 
@@ -13,7 +15,9 @@ const customMiddleWare = config => store => next => action => {
   next(action);
 }
 
-const store = createStore(reducers,{}, applyMiddleware(ReduxThunk, customMiddleWare(testConfig)));
+const store = createStore(reducers,{}, applyMiddleware(ReduxThunk));
+
+Validstate.init(validationConfig, store);
 
 class Demo extends Component {
   render() {
