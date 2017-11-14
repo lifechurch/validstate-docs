@@ -60,6 +60,10 @@ export default class ValidstateMessages {
 
   isEqualTo(property, value) {
     return `${this.titleCase(property)} must be equal to ${value}.`;
+  }
+
+  custom(property, value) {
+    return `${this.titleCase(property)} is invalid.`;
   } 
 
   titleCase(str){

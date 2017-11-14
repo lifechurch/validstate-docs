@@ -443,4 +443,14 @@ export default class Validstate {
     return value === comparison;
   }
 
+  /*
+  * @function customFunction
+  * @description evaluate user defined function
+  * @parameter value, callback
+  * @return Boolean
+  */
+  custom(value, callback) {
+    return callback(value);
+  }
+
 }
