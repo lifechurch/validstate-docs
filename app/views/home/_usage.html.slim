@@ -1,6 +1,8 @@
 section.row id="usage"
   .col-sm-12
     h1 Basic Usage:
+
+    p.font-weight-bold.text-muted validations_config.js
     p 
       | The first thing you will need to do is create a 
       code.highlighter-rouge> validations config 
@@ -12,11 +14,6 @@ section.row id="usage"
           name: { required: true },
           email: { email: true },
           password: { minLength: 8 },
-          _messages: {
-            name: { 
-              required: "Please let us know your name so we can address you properly.",
-            }
-          }
         }
       export default validations;
       ```
@@ -35,7 +32,7 @@ section.row id="usage"
         }
       }
       ```
-
+    p.font-weight-bold.text-muted index.js
     p 
       | Once you have your validation rules created you need to wire up Validstate inside of your app. In your 
       code.highlighter-rouge> index.js
@@ -53,6 +50,60 @@ section.row id="usage"
 
       Validstate.init(validationConfig, store);
       ```
+    p.font-weight-bold.text-muted reducer.js
+    p
+      | Finally import the 
+      code.highlighter-rouge> Validstate
+      | reducer into your core reducers.
+    markdown:
+      ```javascript
+      import { ValidstateReducer } from 'validstate';
+
+      export default combineReducers({
+        validstate: ValidstateReducer
+      });
+      ```
+    p.font-weight-bold.text-muted my_awesome_component.js
+    p 
+      | Inside of your component 
+      code.highlighter-rouge import Validstate
+    markdown:
+      ```javascript
+      import Validstate from 'validstate';
+
+
+    p and then create an event method like normal.
+    markdown:
+      ```javascript
+        submit(event){
+          event.preventDefault();
+          // Validstate validation
+          if(Validstate.validate('account')){
+            console.log('Valid!!');
+            // action creator
+            this.props.submitAccount();
+          } else {
+            console.log('Invalid!!');
+          }
+        }
+      ```
+    p or something like ...
+    markdown:
+      ```javascript
+      onEmailChange(event){
+        let text = event.target.value;
+        // Validstate validation
+        if(Validstate.validate('account')){
+          console.log('Valid!!');
+          // action creator
+          this.props.emailChanged(text);
+        } else {
+          console.log('Invalid!!');
+        }
+      }
+      ```
+
+    p Once your validations run you can then check that your state is valid.
 
 
 
