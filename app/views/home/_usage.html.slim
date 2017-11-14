@@ -1,22 +1,23 @@
 section.row id="usage"
   .col-sm-12
-    h1 Basic Usage:
+    h1.m-b-2 Basic Usage:
 
     p.font-weight-bold.text-muted validations_config.js
-    p 
+    p
       | The first thing you will need to do is create a 
       code.highlighter-rouge> validations config 
       | file that will hold all of your applications validation rules. For example. If you have an account creation form that you would like to validate before a user can create an account, you could set up your validations config with something like this.
-    markdown:
-      ```javascript
-      const VALIDATIONS = {
-        account: {
-          name: { required: true },
-          email: { email: true },
-          password: { minLength: 8 },
-        }
-      export default validations;
-      ```
+    .codeblock.p-y-2
+      markdown:
+        ```javascript
+        const VALIDATIONS = {
+          account: {
+            name: { required: true },
+            email: { email: true },
+            password: { minLength: 8 },
+          }
+        export default validations;
+        ```
 
     p 
       | The validations config is simply a constant that is storing a json object of each rule. Keep in mind that Validstate is not simply a form validator, but a state validation plugin. You can also add rules to validate whether the state is in a place to allow the app to continue or decline a user interaction. If your app is aware of user roles you could also add this rule to your 
@@ -25,6 +26,7 @@ section.row id="usage"
     markdown:
       ```javascript
       ...
+      
       },
       adminAccess: {
         permissions: {
@@ -103,8 +105,23 @@ section.row id="usage"
       }
       ```
 
-    p Once your validations run you can then check that your state is valid.
-
+    p 
+      | Once your validations run you can check that your state is valid. Set up your
+      code.highlighter-rouge<> mapStateToProps
+      | function and add your validstate reducer.
+      markdown:
+        ```javascript
+          const mapStateToProps = ({ core, validstate }) => {
+            let { name, email, password } = core;
+            console.log(validstate);
+            return { name, email, password, validstate};
+          };
+        ```
+    p Now you have access to the valid properties inside of your props.
+    markdown:
+      ```html
+      <Input label="Name" name="Name" valid={this.props.validstate.account.name.valid} value={this.props.name} onChange={this.onNameChange.bind(this)} type="text" />
+      ```
 
 
 
