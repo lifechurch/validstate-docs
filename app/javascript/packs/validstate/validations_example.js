@@ -11,9 +11,9 @@ const VALIDATIONS = {
   },
   contactRequest: {
     name: { required: true },
-    message: { rangelength: "15-500" },
-    mobile: { phoneUS: true, requireGroup: "phoneNumber" },
-    home: { phoneUS: true, requireGroup: "phoneNumber" },
+    message: { rangeLength: "15-500" },
+    // mobile: { phoneUS: true, requireGroup: "phoneNumber" },
+    // home: { phoneUS: true, requireGroup: "phoneNumber" },
     age: { digits: true, range: "18-35" },
     terms: { equalTo: true }
   },
