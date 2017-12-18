@@ -254,9 +254,9 @@ export default class Validstate {
   * @returns {boolean}
   */
   isEmpty(value){
+    let _self = this;
     var isEmptyObject = function(a) {
       if (typeof a.length === 'undefined') { // it's an Object, not an Array
-        let _self = this;
         var hasNonempty = Object.keys(a).some(function nonEmpty(element){
           return !_self.isEmpty(a[element]);
         });
@@ -264,7 +264,7 @@ export default class Validstate {
       }
 
       return !a.some(function nonEmpty(element) { // check if array is really not empty as JS thinks
-        return !isEmpty(element); // at least one element should be non-empty
+        return !_self.isEmpty(element); // at least one element should be non-empty
       });
     };
     return (

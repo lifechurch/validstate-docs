@@ -7,6 +7,7 @@ test('checks if value is required', () => {
   expect(Validstate.required(undefined)).toBe(false);
   expect(Validstate.required([])).toBe(false);
   expect(Validstate.required({})).toBe(false);
+  expect(Validstate.required({foo: '', bar: 'I have content'})).toBe(true);
   expect(Validstate.required(NaN)).toBe(false);
   expect(Validstate.required('I am required')).toBe(true);
 });
