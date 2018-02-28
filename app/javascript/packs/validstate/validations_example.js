@@ -1,11 +1,17 @@
 const VALIDATIONS = {
   account: {
-    name: { required: true },
-    email: { email: true, _reducer: 'auth' },
+    // email: { email: true, _reducer: 'auth' },
+    name: { 
+      firstname: { required: true },
+      lastname: {
+        surname: { required: true },
+        maidenName: { required: true },
+      },
+    },
     password: { 
       _reducer: 'auth',
-      id: { minLength: 8 },
-     },
+      token: { minLength: 8 },
+    },
     _messages: {
       name: { 
         required: "Please let us know your name so we can address you properly.",

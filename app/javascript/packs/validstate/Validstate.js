@@ -113,7 +113,7 @@ export default class Validstate {
       if (propertyKey === "_reducer") {
         continue;
       } else if (this.depthOf(nextProp) > 1) {
-        initialValues[propertyKey] = extractObj(nextProp);
+        initialValues[propertyKey] = this.extractObj(nextProp);
       } else {
         initialValues[propertyKey] = {
           valid: null,
@@ -123,6 +123,66 @@ export default class Validstate {
       }
     }
     return initialValues;
+  }
+
+  validateNestedProperties(property, mergedState, validation) {
+    let propertyValidstate = {
+      valid: true,
+      reason: null,
+      message: null
+    }
+
+    // 
+    // if (this.depthOf(nextProp) > 1) {
+    //   for (props...) {
+    //     const anotherPropertyValidstate = this.validateNestedProperties(nextProp);
+    //     if (!anotherPropertyValidstate.valid) {
+    //       propertyValidstate.valid = false 
+    //       break; 
+    //     } 
+    //   }
+    // }
+    // else {
+    //   for (rules...) {
+    //     // run the test 
+
+    //     // if rule breaks, set propertyValidstate.valid = false, set reason, message
+    //     propertyValidstate.valid = false;
+    //     propertyValidstate.reason = ""
+    //     propertyValidstate.message = ""
+    //     break;
+    //   }
+    // }
+
+    // return propertyValidstate
+    // //
+    if (this.depthOf(property) > 1) {
+      for (const [propertyKey, nextProp] of Object.entries(property)) {
+        if (propertyKey === "_reducer") {
+          continue;
+        } else {
+          propertyValidstate[propertyKey] = this.validateNestedProperties(nextProp, mergedState[propertyKey], validation);
+
+          propertyValidstate.valid = propertyValidstate && propertyValidstate[propertyKey].valid
+        }
+      }
+    } else {
+      for (const [ruleKey, rule] of Object.entries(property)){
+        let value = mergedState;
+        let valid = this[ruleKey](value, rule);
+        if(!valid){
+          this.properties[validation].valid = false;
+          console.log(this.properties[validation]);
+          debugger
+          this.properties[validation][propertyKey].valid = false;
+          propertyValidstate.valid = false;
+          propertyValidstate.reason = ruleKey;
+          // propertyValidstate.message = this.getMessage(validation, propertyKey, ruleKey, rule);
+          break;
+        }
+      }
+    }
+    return propertyValidstate;
   }
 
   /*
@@ -153,17 +213,40 @@ export default class Validstate {
         message: null
       }
 
-      for (const [ruleKey, rule] of Object.entries(property)){
-        let value = mergedState[propertyKey];
-        let valid = this[ruleKey](value, rule);
-        if(!valid){
-          this.properties[validation].valid = false;
-          propertyValidstate.valid = false;
-          propertyValidstate.reason = ruleKey;
-          propertyValidstate.message = this.getMessage(validation, propertyKey, ruleKey, rule);
-          break;
+      // Check top level property
+      if (this.depthOf(property) > 1) {
+        if(propertyKey == "_reducer"){
+          continue;
+        }
+        // Get nested properties
+        // for (const [nestedPropertyKey, nestedProperty] of Object.entries(this.validationConfig[validation][propertyKey])) {
+        console.log(propertyKey, property)
+      //  propertyValidstate =  recursive()
+        console.log(this.validateNestedProperties(property, mergedState[propertyKey], validation))
+        debugger
+        propertyValidstate = this.validateNestedProperties(property, mergedState[propertyKey], validation)
+        console.log(propertyValidstate)
+        debugger
+
+        // }
+      } else {
+        if(propertyKey == "_reducer"){
+          continue;
+        }
+        for (const [ruleKey, rule] of Object.entries(property)){
+          let value = mergedState[propertyKey];
+          debugger
+          let valid = this[ruleKey](value, rule);
+          if(!valid){
+            this.properties[validation].valid = false;
+            propertyValidstate.valid = false;
+            propertyValidstate.reason = ruleKey;
+            propertyValidstate.message = this.getMessage(validation, propertyKey, ruleKey, rule);
+            break;
+          }
         }
       }
+      debugger
       this.properties[validation][propertyKey] = { ...propertyValidstate };
     }
 
@@ -237,7 +320,7 @@ export default class Validstate {
 
   /*
   * @function depthOf
-  * @description Counts largest depth of object starting from 0
+  * @description Counts largest depth of object starting from 1
   * @param object 
   * @returns integer
   */
