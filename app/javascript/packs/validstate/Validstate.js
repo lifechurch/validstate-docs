@@ -15,10 +15,12 @@ export default class Validstate {
     this.validationConfig = {};
     this.validations = [];
     this.properties = {};
+    this.objects = {};
     this.initalProperties = {};
     this.messages = {};
     this.messageTemplate = new ValidstateMessages();
     this.requireGroups = [];
+    // this.parseChildren = this.parseChildren.bind(this);
   }
 
   /*
@@ -48,13 +50,13 @@ export default class Validstate {
   * @param
   * @returns Properties object
   */
-  extract(){
+  extract() {
+    // Sets validations
     for (const [validationKey, validation] of Object.entries(this.validationConfig)) {
 
-      if(this.validations.includes(validationKey)){
+      if (this.validations.includes(validationKey)) {
         throw new Error(`Duplicate validation key. ${validationKey} was already used.`);
-      }
-      else{
+      } else{
         this.validations.push(validationKey);  
       }
 
@@ -62,24 +64,27 @@ export default class Validstate {
         valid: null
       };
 
+      // Sets top level properties
       for (const [propertyKey, property] of Object.entries(validation)) {
 
-        if(propertyKey === "_messages"){
-          //Messages Property
-          if(!this.thetypeof(this.messages[validationKey]).is('object')){
+        if (propertyKey === "_messages") {
+          // Messages Property
+          if (!this.thetypeof(this.messages[validationKey]).is('object')) {
             this.messages[validationKey] = {};
           }
-          this.messages[validationKey] = property;
-        }
-        else{
 
-          if(Object.keys(property)[0] == "forEach"){
-            this.properties[validationKey][propertyKey] = {
-              valid: null,
-              elements: []
-            }
+          this.messages[validationKey] = property;
+
+        } else if (Object.keys(property)[0] == "forEach") {
+          this.properties[validationKey][propertyKey] = {
+            valid: null,
+            elements: []
           }
-          else{
+        } else {
+          // Checks for nested properties
+          if (this.depthOf(property) > 1) {
+            this.properties[validationKey][propertyKey] = this.extractObj(property);
+          } else {
             this.properties[validationKey][propertyKey] = {
               valid: null,
               reason: null,
@@ -92,8 +97,37 @@ export default class Validstate {
   }
 
   /*
+  * @function extractObj
+  * @description extracts objects from supplied properties
+  * @param property 
+  * @returns object
+  */
+  extractObj(property) {
+    let initialValues = {
+      valid: null,
+      reason: null,
+      message: null
+    }
+
+    for (const [propertyKey, nextProp] of Object.entries(property)) {
+      if (propertyKey === "_reducer") {
+        continue;
+      } else if (this.depthOf(nextProp) > 1) {
+        initialValues[propertyKey] = extractObj(nextProp);
+      } else {
+        initialValues[propertyKey] = {
+          valid: null,
+          reason: null,
+          message: null
+        }
+      }
+    }
+    return initialValues;
+  }
+
+  /*
   * @function validate
-  * @description Run speciified validations
+  * @description Run specified validations
   * @param validation 
   * @returns boolean
   */
@@ -201,6 +235,25 @@ export default class Validstate {
     return mergedState;
   }
 
+  /*
+  * @function depthOf
+  * @description Counts largest depth of object starting from 0
+  * @param object 
+  * @returns integer
+  */
+  depthOf(object) {
+    let level = 1;
+    let key;
+    for(key in object) {
+      if (!object.hasOwnProperty(key)) continue;
+
+      if (typeof object[key] == 'object') {
+        const depth = this.depthOf(object[key]) + 1;
+        level = Math.max(depth, level);
+      }
+    }
+    return level;
+  }
 
   /*
   * @function thetypeof

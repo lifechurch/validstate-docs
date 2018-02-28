@@ -6,9 +6,15 @@ import {
 } from "../actions/types";
 
 const INITIAL_STATE = {
-  email: "",
-  password: "",
-  name: "",
+  email: '',
+  password: '',
+  name: '',
+  paymentMethod: { 
+    id: '', 
+    display_label: '', 
+    payment_type: '',
+    payment_method_type: '',
+  },
 };
 
 export default (state = INITIAL_STATE, action) => {
