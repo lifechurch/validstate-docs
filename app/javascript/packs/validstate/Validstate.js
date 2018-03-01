@@ -125,45 +125,6 @@ export default class Validstate {
     return initialValues;
   }
 
-  validateNestedProperties(property, mergedState, validation) {
-    let propertyValidstate = {
-      valid: true,
-      reason: null,
-      message: null
-    }
-    debugger
-    for (const [propertyKey, nextProp] of Object.entries(property)) {
-      debugger
-      if (propertyKey === "_reducer") {
-        continue;
-      } else if (this.depthOf(nextProp) > 1) {
-        debugger
-        propertyValidstate = this.validateNestedProperties(nextProp, mergedState);
-      } else {
-        for (const [ruleKey, rule] of Object.entries(property[propertyKey])){
-          debugger
-          propertyValidstate[propertyKey] = {
-            valid: true,
-            reason: null,
-            message: null
-          }
-          let value = mergedState[propertyKey];
-          let valid = this[ruleKey](value, rule);
-          if(!valid){
-            this.properties[validation].valid = false;
-            propertyValidstate.valid = false;
-            propertyValidstate[propertyKey].valid = false;
-            propertyValidstate[propertyKey].reason = ruleKey;
-            propertyValidstate[propertyKey].message = this.getMessage(validation, propertyKey, ruleKey, rule);
-            break;
-          }
-        }
-      }
-    }
-    debugger
-    return propertyValidstate;
-  }
-
   /*
   * @function validate
   * @description Run specified validations
@@ -192,15 +153,17 @@ export default class Validstate {
           reason: null,
           message: null
         }
-        // Check top level property
+        // Check top level property has children
         if (this.depthOf(property) > 1) {
-          debugger
-          propertyValidstate = this.validateNestedProperties(property, mergedState[propertyKey], validation)
+          propertyValidstate = this.validateNestedProperties(property, mergedState[propertyKey]);
+          if(propertyValidstate.valid == false) {
+            this.properties[validation].valid = false
+          }
         } else {
           for (const [ruleKey, rule] of Object.entries(property)){
             let value = mergedState[propertyKey];
             let valid 
-            debugger
+      
             if(ruleKey == "_reducer"){
               continue;
             } else {
@@ -215,7 +178,7 @@ export default class Validstate {
             }
           }
         }
-        debugger
+  
         this.properties[validation][propertyKey] = { ...propertyValidstate };
       }
     }
@@ -233,6 +196,52 @@ export default class Validstate {
       });
       return false;
     }
+  }
+
+  /*
+  * @function validateNestedProperties
+  * @description Reads tree and validates nested properties 
+  * @param property, mergedState
+  * @returns object
+  */
+  validateNestedProperties(property, mergedState) {
+    let propertyValidstate = {
+      valid: true,
+      reason: null,
+      message: null
+    }
+    
+    for (const [propertyKey, nextProp] of Object.entries(property)) {
+
+      if (propertyKey === "_reducer") {
+        continue;
+      } else if (this.depthOf(nextProp) > 1) { // Check top level property has children
+        propertyValidstate[propertyKey] = this.validateNestedProperties(nextProp, mergedState[propertyKey])
+        if (propertyValidstate[propertyKey].valid == false) {
+          propertyValidstate.valid = false
+        }
+      } else {
+        for (const [ruleKey, rule] of Object.entries(property[propertyKey])){
+          propertyValidstate[propertyKey] = {
+            valid: true,
+            reason: null,
+            message: null
+          }
+
+          let value = mergedState[propertyKey];
+          let valid = this[ruleKey](value, rule);
+          if(!valid){
+            propertyValidstate.valid = false;
+            propertyValidstate[propertyKey].valid = false;
+            propertyValidstate[propertyKey].reason = ruleKey;
+            // TODO add recursive method for child messages
+            // propertyValidstate[propertyKey].message = this.getMessage(validation, propertyKey, ruleKey, rule);
+            break;
+          }
+        }
+      }
+    }
+    return propertyValidstate;
   }
 
   /*

@@ -6,15 +6,15 @@ import {
 } from "../actions/types";
 
 const INITIAL_STATE = {
-  // email: '',
+  email: '',
   password: {
     token: '',
   },
   name: {
     firstname: '',
     lastname: {
-      surname: '',
-      maidenName: 'McMichael',
+      surname: 'Smith',
+      maidenName: 'Jones',
     },
   },
 };
