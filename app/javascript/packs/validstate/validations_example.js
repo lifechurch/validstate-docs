@@ -1,10 +1,10 @@
 const VALIDATIONS = {
   account: {
-    // email: { email: true, _reducer: 'auth' },
+    email: { email: true, _reducer: 'auth' },
     name: { 
       firstname: { required: true },
       lastname: {
-        surname: { required: true },
+        // surname: { required: true },
         maidenName: { required: true },
       },
     },
