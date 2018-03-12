@@ -15,12 +15,10 @@ export default class Validstate {
     this.validationConfig = {};
     this.validations = [];
     this.properties = {};
-    this.objects = {};
     this.initialProperties = {};
     this.messages = {};
     this.messageTemplate = new ValidstateMessages();
     this.requireGroups = [];
-    // this.parseChildren = this.parseChildren.bind(this);
   }
 
   /*
