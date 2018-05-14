@@ -138,3 +138,11 @@ test('strong comparison of one value to another', () => {
   expect(Validstate.isEqualTo(1, '1')).toBe(false);
   expect(Validstate.isEqualTo('true', true)).toBe(false);
 });
+
+test('`custom()`, evaluate user defined function', () => {
+  function greaterThan(length) {
+    return length > 5;
+  }
+  expect(Validstate.custom(10, greaterThan)).toBe(true);
+  expect(Validstate.custom(1, greaterThan)).toBe(false);
+});

@@ -49,6 +49,10 @@ export default class Validstate {
   * @returns Properties object
   */
   extract() {
+    this.properties = {
+      valid: null
+    };
+
     // Sets validations
     for (const [validationKey, validation] of Object.entries(this.validationConfig)) {
 
@@ -135,7 +139,7 @@ export default class Validstate {
       return false;
     }
 
-    let mergedState = this.mergeState();
+    let mergedState = this.mergeState(this.store.getState());
 
     this.properties[validation].valid = true; 
 
@@ -281,17 +285,18 @@ export default class Validstate {
   /*
   * @function mergeState
   * @description Merge state into single object
-  * @param  
+  * @param state
   * @returns object
   */
-  mergeState(){
-    let state = this.store.getState();
+  mergeState(state){
     let mergedState = {};
     for (const [key, reducer] of Object.entries(state)) {
       if(key != "validstate"){
         mergedState = { ...mergedState, ...reducer };  
       }
+      debugger
     }
+    debugger
     return mergedState;
   }
 
@@ -348,7 +353,7 @@ export default class Validstate {
 
   /*
   * @function getLength
-  * @description  returns length of supplied value
+  * @description returns length of supplied value
   * @param value
   * @returns length
   */
@@ -391,7 +396,7 @@ export default class Validstate {
 
   /*
   * @function isPresent
-  * @description  Determine if a value is present
+  * @description Determine if a value is present
   * @parameter value
   * @return Boolean
   */
