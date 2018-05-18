@@ -15,7 +15,7 @@ export default class Validstate {
     this.validationConfig = {};
     this.validations = [];
     this.properties = {};
-    this.initalProperties = {};
+    this.initialProperties = {};
     this.messages = {};
     this.messageTemplate = new ValidstateMessages();
     this.requireGroups = [];
@@ -34,7 +34,7 @@ export default class Validstate {
     //Parse validations for properties
     this.extract(); 
 
-    this.initalProperties = cloneDeep(this.properties);
+    this.initialProperties = cloneDeep(this.properties);
 
     this.store.dispatch({
       type: ValidstateConst.VALIDSTATE_INIT,
@@ -48,13 +48,13 @@ export default class Validstate {
   * @param
   * @returns Properties object
   */
-  extract(){
+  extract() {
+    // Sets validations
     for (const [validationKey, validation] of Object.entries(this.validationConfig)) {
 
-      if(this.validations.includes(validationKey)){
+      if (this.validations.includes(validationKey)) {
         throw new Error(`Duplicate validation key. ${validationKey} was already used.`);
-      }
-      else{
+      } else{
         this.validations.push(validationKey);  
       }
 
@@ -62,24 +62,27 @@ export default class Validstate {
         valid: null
       };
 
+      // Sets top level properties
       for (const [propertyKey, property] of Object.entries(validation)) {
 
-        if(propertyKey === "_messages"){
-          //Messages Property
-          if(!this.thetypeof(this.messages[validationKey]).is('object')){
+        if (propertyKey === "_messages") {
+          // Messages Property
+          if (!this.thetypeof(this.messages[validationKey]).is('object')) {
             this.messages[validationKey] = {};
           }
-          this.messages[validationKey] = property;
-        }
-        else{
 
-          if(Object.keys(property)[0] == "forEach"){
-            this.properties[validationKey][propertyKey] = {
-              valid: null,
-              elements: []
-            }
+          this.messages[validationKey] = property;
+
+        } else if (Object.keys(property)[0] == "forEach") {
+          this.properties[validationKey][propertyKey] = {
+            valid: null,
+            elements: []
           }
-          else{
+        } else {
+          // Checks for nested properties
+          if (this.depthOf(property) > 1) {
+            this.properties[validationKey][propertyKey] = this.extractObj(property);
+          } else {
             this.properties[validationKey][propertyKey] = {
               valid: null,
               reason: null,
@@ -92,8 +95,37 @@ export default class Validstate {
   }
 
   /*
+  * @function extractObj
+  * @description extracts objects from supplied properties
+  * @param property 
+  * @returns object
+  */
+  extractObj(property) {
+    let initialValues = {
+      valid: null,
+      reason: null,
+      message: null
+    }
+
+    for (const [propertyKey, nextProp] of Object.entries(property)) {
+      if (propertyKey === "_reducer") {
+        continue;
+      } else if (this.depthOf(nextProp) > 1) {
+        initialValues[propertyKey] = this.extractObj(nextProp);
+      } else {
+        initialValues[propertyKey] = {
+          valid: null,
+          reason: null,
+          message: null
+        }
+      }
+    }
+    return initialValues;
+  }
+
+  /*
   * @function validate
-  * @description Run speciified validations
+  * @description Run specified validations
   * @param validation 
   * @returns boolean
   */
@@ -111,26 +143,42 @@ export default class Validstate {
 
       if(propertyKey == "_messages"){
         continue;
-      }
-      
-      let propertyValidstate = {
-        valid: true,
-        reason: null,
-        message: null
-      }
-
-      for (const [ruleKey, rule] of Object.entries(property)){
-        let value = mergedState[propertyKey];
-        let valid = this[ruleKey](value, rule);
-        if(!valid){
-          this.properties[validation].valid = false;
-          propertyValidstate.valid = false;
-          propertyValidstate.reason = ruleKey;
-          propertyValidstate.message = this.getMessage(validation, propertyKey, ruleKey, rule);
-          break;
+      } else if(propertyKey == "_reducer"){
+        continue;
+      } else {
+        let propertyValidstate = {
+          valid: true,
+          reason: null,
+          message: null
         }
+        // Check top level property has children
+        if (this.depthOf(property) > 1) {
+          propertyValidstate = this.validateNestedProperties(property, mergedState[propertyKey]);
+          if(propertyValidstate.valid == false) {
+            this.properties[validation].valid = false
+          }
+        } else {
+          for (const [ruleKey, rule] of Object.entries(property)){
+            let value = mergedState[propertyKey];
+            let valid 
+      
+            if(ruleKey == "_reducer"){
+              continue;
+            } else {
+              valid = this[ruleKey](value, rule);
+            }
+            if(!valid){
+              this.properties[validation].valid = false;
+              propertyValidstate.valid = false;
+              propertyValidstate.reason = ruleKey;
+              propertyValidstate.message = this.getMessage(validation, propertyKey, ruleKey, rule);
+              break;
+            }
+          }
+        }
+  
+        this.properties[validation][propertyKey] = { ...propertyValidstate };
       }
-      this.properties[validation][propertyKey] = { ...propertyValidstate };
     }
 
     if(this.properties[validation].valid){
@@ -149,6 +197,52 @@ export default class Validstate {
   }
 
   /*
+  * @function validateNestedProperties
+  * @description Reads tree and validates nested properties 
+  * @param property, mergedState
+  * @returns object
+  */
+  validateNestedProperties(property, mergedState) {
+    let propertyValidstate = {
+      valid: true,
+      reason: null,
+      message: null
+    }
+    
+    for (const [propertyKey, nextProp] of Object.entries(property)) {
+
+      if (propertyKey === "_reducer") {
+        continue;
+      } else if (this.depthOf(nextProp) > 1) { // Check top level property has children
+        propertyValidstate[propertyKey] = this.validateNestedProperties(nextProp, mergedState[propertyKey])
+        if (propertyValidstate[propertyKey].valid == false) {
+          propertyValidstate.valid = false
+        }
+      } else {
+        for (const [ruleKey, rule] of Object.entries(property[propertyKey])){
+          propertyValidstate[propertyKey] = {
+            valid: true,
+            reason: null,
+            message: null
+          }
+
+          let value = mergedState[propertyKey];
+          let valid = this[ruleKey](value, rule);
+          if(!valid){
+            propertyValidstate.valid = false;
+            propertyValidstate[propertyKey].valid = false;
+            propertyValidstate[propertyKey].reason = ruleKey;
+            // TODO add recursive method for child messages
+            // propertyValidstate[propertyKey].message = this.getMessage(validation, propertyKey, ruleKey, rule);
+            break;
+          }
+        }
+      }
+    }
+    return propertyValidstate;
+  }
+
+  /*
   * @function clear
   * @description Clear validations 
   * @param validation 
@@ -158,12 +252,12 @@ export default class Validstate {
     if(validation == null){
       this.store.dispatch({
         type: ValidstateConst.VALIDSTATE_CLEAR,
-        payload: this.initalProperties
+        payload: this.initialProperties
       });
     } else {
       this.store.dispatch({
         type: ValidstateConst.VALIDSTATE_CLEAR,
-        payload: { [validation]: this.initalProperties[validation] }
+        payload: { [validation]: this.initialProperties[validation] }
       });
     }
   }
@@ -201,6 +295,25 @@ export default class Validstate {
     return mergedState;
   }
 
+  /*
+  * @function depthOf
+  * @description Counts largest depth of object starting from 1
+  * @param object 
+  * @returns integer
+  */
+  depthOf(object) {
+    let level = 1;
+    let key;
+    for(key in object) {
+      if (!object.hasOwnProperty(key)) continue;
+
+      if (typeof object[key] == 'object') {
+        const depth = this.depthOf(object[key]) + 1;
+        level = Math.max(depth, level);
+      }
+    }
+    return level;
+  }
 
   /*
   * @function thetypeof

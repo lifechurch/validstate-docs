@@ -6,9 +6,17 @@ import {
 } from "../actions/types";
 
 const INITIAL_STATE = {
-  email: "",
-  password: "",
-  name: "",
+  email: '',
+  password: {
+    token: '',
+  },
+  name: {
+    firstname: '',
+    lastname: {
+      surname: 'Smith',
+      maidenName: 'Jones',
+    },
+  },
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -16,9 +24,9 @@ export default (state = INITIAL_STATE, action) => {
     case EMAIL_CHANGED:
       return { ...state, email: action.payload };
     case PASSWORD_CHANGED:
-      return { ...state, password: action.payload };
+      return { ...state, password: { ...state.password, token: action.payload } };
     case NAME_CHANGED: 
-      return { ...state, name: action.payload }; 
+      return { ...state, name: { ...state.name, firstname: action.payload } }; 
     default:
       return state;
   }

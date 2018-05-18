@@ -1,8 +1,18 @@
 const VALIDATIONS = {
   account: {
-    name: { required: true },
-    email: { email: true },
-    password: { minLength: 8 },
+    email: { email: true, _reducer: 'auth' },
+    name: { 
+      _reducer: 'auth',
+      firstname: { required: true },
+      lastname: {
+        surname: { required: true },
+        maidenName: { required: true },
+      },
+    },
+    password: { 
+      _reducer: 'auth',
+      token: { minLength: 8 },
+    },
     _messages: {
       name: { 
         required: "Please let us know your name so we can address you properly.",
@@ -12,8 +22,8 @@ const VALIDATIONS = {
   contactRequest: {
     name: { required: true },
     message: { rangeLength: "15-500" },
-    // mobile: { phoneUS: true, requireGroup: "phoneNumber" },
-    // home: { phoneUS: true, requireGroup: "phoneNumber" },
+    mobile: { phoneUS: true, requireGroup: "phoneNumber" },
+    home: { phoneUS: true, requireGroup: "phoneNumber" },
     age: { digits: true, range: "18-35" },
     terms: { equalTo: true }
   },
