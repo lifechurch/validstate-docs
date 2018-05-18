@@ -24,6 +24,8 @@
     "test": "jest"
   },
   "jest": {
-    "roots": ["<rootDir>/app/javascript/"]
+    "roots": [
+      "<rootDir>/app/javascript/"
+    ]
   }
 }
